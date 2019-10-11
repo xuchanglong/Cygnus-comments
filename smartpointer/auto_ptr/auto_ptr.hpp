@@ -1,3 +1,6 @@
+#ifndef SMARTPOINTER_AUTO_PTR_AUTO_PTR_HPP_
+#define SMARTPOINTER_AUTO_PTR_AUTO_PTR_HPP_
+
 template <class X>
 class auto_ptr
 {
@@ -64,6 +67,10 @@ public:
 
     ~auto_ptr()
     {
+        /**
+         * 只有拥有了内存所有权的 auto_ptr 才能释放该内存，
+         * 避免 delete 过期指针。
+        */
         if (owns)
             delete ptr;
     }
@@ -73,7 +80,7 @@ public:
     */
     X &operator*() const { return *ptr; }
     X *operator->() const { return ptr; }
-    
+
     /**
      * 返回所管理的内存的首地址。
     */
@@ -85,6 +92,8 @@ public:
     X *release() const
     {
         owns = false;
-        return ptr
+        return ptr;
     }
 };
+
+#endif
