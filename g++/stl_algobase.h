@@ -143,9 +143,10 @@ struct __copy_dispatch
 #ifdef __STL_CLASS_PARTIAL_SPECIALIZATION 
 
 template <class T>
-inline T* __copy_t(const T* first, const T* last, T* result, __true_type) {
-  memmove(result, first, sizeof(T) * (last - first));
-  return result + (last - first);
+inline T* __copy_t(const T* first, const T* last, T* result, __true_type)
+{
+  	memmove(result, first, sizeof(T) * (last - first));
+  	return result + (last - first);
 }
 
 template <class T>
@@ -156,10 +157,11 @@ inline T* __copy_t(const T* first, const T* last, T* result, __false_type) {
 template <class T>
 struct __copy_dispatch<T*, T*>
 {
-  T* operator()(T* first, T* last, T* result) {
-    typedef typename __type_traits<T>::has_trivial_assignment_operator t; 
-    return __copy_t(first, last, result, t());
-  }
+  	T* operator()(T* first, T* last, T* result) 
+  	{
+    	typedef typename __type_traits<T>::has_trivial_assignment_operator t; 
+    	return __copy_t(first, last, result, t());
+  	}
 };
 
 template <class T>
@@ -174,15 +176,19 @@ struct __copy_dispatch<const T*, T*>
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
 template <class InputIterator, class OutputIterator>
-inline OutputIterator copy(InputIterator first, InputIterator last,
-                           OutputIterator result)
+inline OutputIterator copy(
+								InputIterator first, 
+								InputIterator last,
+                           		OutputIterator result
+                           	)
 {
   return __copy_dispatch<InputIterator,OutputIterator>()(first, last, result);
 }
 
-inline char* copy(const char* first, const char* last, char* result) {
-  memmove(result, first, last - first);
-  return result + (last - first);
+inline char* copy(const char* first, const char* last, char* result) 
+{
+	memmove(result, first, last - first);
+  	return result + (last - first);
 }
 
 inline wchar_t* copy(const wchar_t* first, const wchar_t* last,
@@ -282,16 +288,22 @@ copy_n(InputIterator first, Size count,
 }
 
 template <class ForwardIterator, class T>
-void fill(ForwardIterator first, ForwardIterator last, const T& value) {
+void fill(
+			ForwardIterator first, 
+			ForwardIterator last, 
+			const T& value
+		  ) 
+{
   for ( ; first != last; ++first)
     *first = value;
 }
 
 template <class OutputIterator, class Size, class T>
-OutputIterator fill_n(OutputIterator first, Size n, const T& value) {
-  for ( ; n > 0; --n, ++first)
-    *first = value;
-  return first;
+OutputIterator fill_n(OutputIterator first, Size n, const T& value) 
+{
+	for ( ; n > 0; --n, ++first)
+		*first = value;
+  	return first;
 }
 
 template <class InputIterator1, class InputIterator2>

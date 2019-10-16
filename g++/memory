@@ -80,7 +80,9 @@ __STL_END_NAMESPACE
 #endif /* mutable && explicit && member templates */
 #endif /* 0 */
 
+
 #endif /* __SGI_STL_MEMORY */
+
 
 // Local Variables:
 // mode:C++

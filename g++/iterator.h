@@ -65,7 +65,7 @@ using __STD::bidirectional_iterator;
 using __STD::random_access_iterator;
 
 #ifdef __STL_CLASS_PARTIAL_SPECIALIZATION
-using __STD::iterator_traits;
+using __STD::;
 #endif
 
 using __STD::iterator_category;

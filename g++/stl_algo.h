@@ -135,9 +135,9 @@ void count_if(InputIterator first, InputIterator last, Predicate pred,
 #ifdef __STL_CLASS_PARTIAL_SPECIALIZATION
 
 template <class InputIterator, class T>
-typename iterator_traits<InputIterator>::difference_type
+typename <InputIterator>::difference_type
 count(InputIterator first, InputIterator last, const T& value) {
-  typename iterator_traits<InputIterator>::difference_type n = 0;
+  typename <InputIterator>::difference_type n = 0;
   for ( ; first != last; ++first)
     if (*first == value)
       ++n;
