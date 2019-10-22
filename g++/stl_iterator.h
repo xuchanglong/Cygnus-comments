@@ -318,7 +318,7 @@ inline void __distance(RandomAccessIterator first, RandomAccessIterator last,
  * @paras   first   内存的开始地址。
  *          last    内存的结束地址。
  *          n   元素的数量。
- * @ret 无。
+ * @ret none 。
 */
 template <class InputIterator, class Distance>
 inline void distance(InputIterator first, InputIterator last, Distance &n)
