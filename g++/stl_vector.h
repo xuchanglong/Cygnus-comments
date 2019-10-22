@@ -229,7 +229,16 @@ public:
         range_initialize(first, last, iterator_category(first));
     }
 #else /* __STL_MEMBER_TEMPLATES */
-
+    /**
+     * @function    数组转成 vector 。
+     * @paras   first   数组的首地址。
+     *          last    数组的末地址。
+     * 
+     * @notice  下面以5个元素的数组举例。
+     *          |_1_|_2_|_3_|_4_|_5_|
+     *          |                   |
+     *        first                last
+    */
     vector(const_iterator first, const_iterator last)
     {
         size_type n = 0;
