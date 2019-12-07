@@ -16,7 +16,9 @@
 #define __SGI_STL_MEMORY
 
 #include <stl_algobase.h>
+// 负责内存空间的配置和释放。
 #include <stl_alloc.h>
+// 负责对象内容的构建和解构。
 #include <stl_construct.h>
 #include <stl_tempbuf.h>
 #include <stl_uninitialized.h>
@@ -80,9 +82,7 @@ __STL_END_NAMESPACE
 #endif /* mutable && explicit && member templates */
 #endif /* 0 */
 
-
 #endif /* __SGI_STL_MEMORY */
-
 
 // Local Variables:
 // mode:C++
