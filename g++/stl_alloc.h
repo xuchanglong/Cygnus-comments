@@ -143,15 +143,15 @@ extern void (*__malloc_alloc_oom_handler)();
 
 // ================================== 一级配置器 ================================== //
 
-//	malloc-based allocator，一级配置器。
-//	注意，无“template 型别参数”，inst 无用。
+// malloc-based allocator，一级配置器。
+// 注意，无“template 型别参数”，inst 无用。
 template <int inst>
 class __malloc_alloc_template
 {
 
 private:
-    //	以下函数用于处理内存不足的情况。
-    //	oo，代表 Out	 of memory。
+    // 以下函数用于处理内存不足的情况。
+    // oom，代表 out of memory。
     static void *oom_malloc(size_t);
 
     static void *oom_realloc(void *, size_t);
@@ -163,9 +163,9 @@ private:
 public:
     static void *allocate(size_t n)
     {
-        //	一级分配器直接使用malloc()。
+        // 一级分配器直接使用malloc()。
         void *result = malloc(n);
-        //	若内存不够用，则改用oom_malloc()
+        // 若内存不够用，则改用oom_malloc()
         if (0 == result)
             result = oom_malloc(n);
         return result;
@@ -173,22 +173,26 @@ public:
 
     static void deallocate(void *p, size_t /* n */)
     {
-        //	一级分配器直接使用free。
+        // 一级分配器直接使用free()。
         free(p);
     }
 
     static void *reallocate(void *p, size_t /* old_sz */, size_t new_sz)
     {
-        //	一级分配器直接使用realloc()。
+        // 一级分配器直接使用realloc()。
         void *result = realloc(p, new_sz);
-        //	若内存不足，则改用realloc()。
+        // 若内存不足，则改用realloc()。
         if (0 == result)
             result = oom_realloc(p, new_sz);
         return result;
     }
 
-    //	仿真C++的set_new_handler()，即：通过该函数
-    //	制定自己的Out of memory handler.
+    // 仿真C++的set_new_handler()，即：通过该函数制定自己的Out of memory handler。
+    // 函数等价如下：
+    //              using TYPE_F =  void (*)();
+    //              TYPE_F set_malloc_handler(TYPE_F f)
+    // 即：形参是 void (*)() 且返回值也是 void (*)() 。
+    // https://blog.csdn.net/charles1e/article/details/51620673
     static void (*set_malloc_handler(void (*f)()))()
     {
         void (*old)() = __malloc_alloc_oom_handler;
@@ -198,19 +202,19 @@ public:
 };
 
 // malloc_alloc out-of-memory handling
-
+// C++ new-handler 内存不足时的处理例程。
+// 需要由开发者进行指定。
 #ifndef __STL_STATIC_TEMPLATE_MEMBER_BUG
 template <int inst>
 void (*__malloc_alloc_template<inst>::__malloc_alloc_oom_handler)() = 0;
 #endif
 
 template <int inst>
-
 void *__malloc_alloc_template<inst>::oom_malloc(size_t n)
 {
     void (*my_malloc_handler)();
     void *result;
-    //	不断的尝试释放、配置、再释放、再配置……
+    // 不断的尝试释放、配置、再释放、再配置……
     for (;;)
     {
         my_malloc_handler = __malloc_alloc_oom_handler;
@@ -218,9 +222,9 @@ void *__malloc_alloc_template<inst>::oom_malloc(size_t n)
         {
             __THROW_BAD_ALLOC;
         }
-        //	调用处理例程，企图释放内存。
+        // 调用处理例程，企图释放内存。
         (*my_malloc_handler)();
-        //	再次尝试配置内存。
+        // 再次尝试配置内存。
         result = malloc(n);
         if (result)
             return (result);
@@ -331,7 +335,7 @@ typedef malloc_alloc single_client_alloc;
 #else
 
 // ================================== 二级配置器 ================================== //
-//	默认节点分配。
+// 默认节点分配。
 // Default node allocator.
 // With a reasonable compiler, this should be roughly as fast as the
 // original STL class-specific allocators, but with less fragmentation.
@@ -358,25 +362,25 @@ typedef malloc_alloc single_client_alloc;
 // different types, limiting the utility of this approach.
 #ifdef __SUNPRO_CC
 // breaks if we make these template class members:
-//	小型区块的上调边界
+// 小型区块的上调边界
 enum
 {
     __ALIGN = 8
 };
-//  小型区块的上限
+// 小型区块的上限
 enum
 {
     __MAX_BYTES = 128
 };
-//	free-lists 个数
+// free-lists 个数
 enum
 {
     __NFREELISTS = __MAX_BYTES / __ALIGN
 };
 #endif
 
-//	无 “ template 型别参数” ，且第二个参数无用。
-//	第一个参数用于多线程环境下。
+// 无 “ template 型别参数” ，且第二个参数无用。
+// 第一个参数用于多线程环境下。
 template <bool threads, int inst>
 class __default_alloc_template
 {
@@ -393,23 +397,23 @@ private:
     {
         __MAX_BYTES = 128
     };
-    //	分配了16个链表（0 ~ 15），节点内存大小分别是8、16、24、32、……、128.
+    // 分配了16个链表（0 ~ 15），节点内存大小分别是8、16、24、32、……、128。
     enum
     {
         __NFREELISTS = __MAX_BYTES / __ALIGN
     };
 #endif
-    //	将 bytes 上调至8的倍数，用于对齐使用。
+    // 将 bytes 上调至8的倍数，用于对齐使用。
     static size_t ROUND_UP(size_t bytes)
     {
         return (((bytes) + __ALIGN - 1) & ~(__ALIGN - 1));
     }
     __PRIVATE :
-        //	free-list 的节点构造。
+        // free-list 的节点构造。
         union obj {
-        //	指向下一个节点。
+        // 指向下一个节点。
         union obj *free_list_link;
-        char client_data[1]; /* The client sees this.        */
+        char client_data[1]; /* The client sees this. */
     };
 
 private:
@@ -417,20 +421,20 @@ private:
     static obj *__VOLATILE free_list[];
     // Specifying a size results in duplicate def for 4.1
 #else
-    //	16个free-lists。该链表始终存放空闲块。
+    // 16个free-lists。这些链表始终存放空闲块。
     static obj *__VOLATILE free_list[__NFREELISTS];
 #endif
-    //	返回free_list[16]一个索引值
+    // 根据待分配的内存，返回第 n 号 free-lists 。n 从 0 算起。
     static size_t FREELIST_INDEX(size_t bytes)
     {
-        //	返回对应的0-15的值。
-        //	当 bytes 为10时，对齐之后，实际分配的内存块大小为16，应该用1号链表。
-        //	那么 (bytes + __ALIGN-1  ) / __ALIGN, 就是为了计算其所属链表的号，
-        //	但是该号是从1开始的，故再减一。
+        // 返回对应的0-15的值。
+        // 当 bytes 为10时，对齐之后，实际分配的内存块大小为16，应该用1号链表。
+        // 那么 (bytes + __ALIGN - 1  ) / __ALIGN, 就是为了计算其所属链表的号，
+        // 但是该号是从 0 开始的，故再减一。
         return (((bytes) + __ALIGN - 1) / __ALIGN - 1);
     }
 
-    //	返回大小为n的区块，并且可能加入大小为n的其他区块到链表中。
+    // 返回大小为n的区块，并且可能加入大小为n的其他区块到链表中。
 
     // Returns an object of size n, and optionally adds to size n free list.
     static void *refill(size_t n);
