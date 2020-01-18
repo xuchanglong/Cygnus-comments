@@ -187,7 +187,7 @@ public:
         return result;
     }
 
-    // 仿真C++的set_new_handler()，即：通过该函数制定自己的Out of memory handler。
+    // 仿真C++的set_new_handler()，即：通过该函数制定自己的 Out of memory handler。
     // 函数等价如下：
     //              using TYPE_F =  void (*)();
     //              TYPE_F set_malloc_handler(TYPE_F f)
@@ -411,8 +411,9 @@ private:
     __PRIVATE :
         // free-list 的节点构造。
         union obj {
-        // 指向下一个节点。
+        // 指向下一个节点的首地址。
         union obj *free_list_link;
+        // 指向本节点的首地址。
         char client_data[1]; /* The client sees this. */
     };
 
@@ -434,22 +435,20 @@ private:
         return (((bytes) + __ALIGN - 1) / __ALIGN - 1);
     }
 
-    // 返回大小为n的区块，并且可能加入大小为n的其他区块到链表中。
-
+    // 返回大小为n的区块，并且可能加入大小为 n 的其他区块到 free list 中。
     // Returns an object of size n, and optionally adds to size n free list.
     static void *refill(size_t n);
 
-    //	分配一大块内存，可容纳nobjs个大小为size的内存。
-    //	如果申请这么多内存不方便mnobjs可能会降低
-
+    // 分配一大块内存，可容纳 nobjs 个大小为 size 的内存。
+    // 如果申请这么多内存不方便 nobjs 可能会降低
     // Allocates a chunk for nobjs of size "size".  nobjs may be reduced
     // if it is inconvenient to allocate the requested number.
     static char *chunk_alloc(size_t size, int &nobjs);
 
     // Chunk allocation state.
-    //	内存池的起始位置，只在 chunk_alloc 中变化。
+    // 内存池的起始位置，只在 chunk_alloc() 中变化。
     static char *start_free;
-    //	内存池的终止位置，只在 chunk_alloc 中变化。
+    // 内存池的终止位置，只在 chunk_alloc() 中变化。
     static char *end_free;
     static size_t heap_size;
 
@@ -502,12 +501,12 @@ public:
     {
         obj *__VOLATILE *my_free_list;
         obj *__RESTRICT result;
-        //	n若大于128，则调用一级分配器。
+        // 若 n > 128，则调用一级分配器。
         if (n > (size_t)__MAX_BYTES)
         {
             return (malloc_alloc::allocate(n));
         }
-        //	寻找16个free lists中适当的一个。
+        // 寻找 16 个 free lists 中适当的一个。
         my_free_list = free_list + FREELIST_INDEX(n);
         // Acquire the lock here with a constructor call.
         // This ensures that it is released in exit or during stack
@@ -516,15 +515,15 @@ public:
         /*REFERENCED*/
         lock lock_instance;
 #endif
-        //	*my_free_list 值是存放该链表下一个可用的内存块的首地址。
+        // *my_free_list 值是存放该链表中下一个可用的内存块的首地址。
         result = *my_free_list;
-        //	若没有可用的free list，则准备重新填充free list.
+        // 若没有可用的 free list，则准备重新填充 free list 。
         if (result == 0)
         {
             void *r = refill(ROUND_UP(n));
             return r;
         }
-        //	调整 freelist。即：始终从链表的首位置提取内存块。
+        // 调整 freelist。即：始终从链表的首位置提取内存块。
         *my_free_list = result->free_list_link;
         return (result);
     };
@@ -561,28 +560,28 @@ public:
 typedef __default_alloc_template<__NODE_ALLOCATOR_THREADS, 0> alloc;
 typedef __default_alloc_template<false, 0> single_client_alloc;
 
-//	我们申请一个大个内存，内存大小为 size * nobjs 。
+// 我们申请一个大个内存，内存大小为 size * nobjs 。
 /* We allocate memory in large chunks in order to avoid fragmenting     */
 /* the malloc heap too much.                                            */
 /* We assume that size is properly aligned.                             */
 /* We hold the allocation lock.                                         */
 template <bool threads, int inst>
-char * //	size 为单个区块的大小，nobjs 为所有的区块个数。
+char * // size 为单个区块的大小，nobjs 为所有的区块个数。
 __default_alloc_template<threads, inst>::chunk_alloc(size_t size, int &nobjs)
 {
     char *result;
-    //	计算总共的区块大小。
+    // 计算总共的区块大小。
     size_t total_bytes = size * nobjs;
-    //	内存池剩余量。
+    // 内存池剩余量。
     size_t bytes_left = end_free - start_free;
-    //	若剩余的内存足够大，则直接返回 start_free。
+    // 若剩余的内存足够大，则直接返回 start_free。
     if (bytes_left >= total_bytes)
     {
         result = start_free;
         start_free += total_bytes;
         return (result);
     }
-    //	内存池剩余空间不能满足要求，但是能够供应至少一个区块。
+    // 内存池剩余空间不能满足要求，但是能够供应至少一个区块。
     else if (bytes_left >= size)
     {
         nobjs = bytes_left / size;
@@ -591,7 +590,7 @@ __default_alloc_template<threads, inst>::chunk_alloc(size_t size, int &nobjs)
         start_free += total_bytes;
         return (result);
     }
-    //	内存池剩余空间连一个内存块也供应不了
+    // 内存池剩余空间连一个内存块也供应不了
     else
     {
         size_t bytes_to_get = 2 * total_bytes + ROUND_UP(heap_size >> 4);
@@ -607,9 +606,9 @@ __default_alloc_template<threads, inst>::chunk_alloc(size_t size, int &nobjs)
             ((obj *)start_free)->free_list_link = *my_free_list;
             *my_free_list = (obj *)start_free;
         }
-        //	配置heap空间，来补充内存池。
+        // 配置heap空间，来补充内存池。
         start_free = (char *)malloc(bytes_to_get);
-        //	heap 不足，malloc 失败。
+        // heap 不足，malloc 失败。
         if (0 == start_free)
         {
             int i;
@@ -617,7 +616,7 @@ __default_alloc_template<threads, inst>::chunk_alloc(size_t size, int &nobjs)
             // Try to make do with what we have.  That can't
             // hurt.  We do not try smaller requests, since that tends
             // to result in disaster on multi-process machines.
-            //	尝试从其他链表中找到尚存的并且足够大的区块。
+            // 尝试从其他链表中找到尚存的并且足够大的区块。
             for (i = size; i <= __MAX_BYTES; i += __ALIGN)
             {
                 my_free_list = free_list + FREELIST_INDEX(i);
@@ -660,28 +659,28 @@ template <bool threads, int inst>
 void *__default_alloc_template<threads, inst>::refill(size_t n)
 {
     int nobjs = 20;
-    //	申请20个，每个大小为n的内存块
+    // 申请20个，每个大小为 n 的内存块
     char *chunk = chunk_alloc(n, nobjs);
-    //	存储制定 free list 中存储的内容，即：区块的节点的首地址。
+    // 存储制定 free list 中存储的内容，即：区块的节点的首地址。
     obj *__VOLATILE *my_free_list;
-    //	存储返回的结果。
+    // 存储返回的结果。
     obj *result;
-    //	当前节点的首地址和下一个节点的首地址。
+    // 当前节点的首地址和下一个节点的首地址。
     obj *current_obj, *next_obj;
     int i;
-    //	若只用1个区块，那分配的这个大区块直接给调用者用。
+    // 若只用1个区块，那分配的这个大区块直接给调用者用。
     if (1 == nobjs)
         return (chunk);
-    //	获得制定链表的首地址的地址。
+    // 获得指定链表的首地址的地址。
     my_free_list = free_list + FREELIST_INDEX(n);
 
     /* Build free list in chunk */
-    //	以下在chunk空间内建立free list
-    //	result 作为返回值。
+    // 以下在chunk空间内建立free list
+    // result 作为返回值。
     result = (obj *)chunk;
-    //	以下引到 free list 指向新配置的空间。
+    // 以下引到 free list 指向新配置的空间。
     *my_free_list = next_obj = (obj *)(chunk + n);
-    //	以下将 free list 的各个节点串接起来。
+    // 以下将 free list 的各个节点串接起来。
     for (i = 1;; i++)
     {
         current_obj = next_obj;
