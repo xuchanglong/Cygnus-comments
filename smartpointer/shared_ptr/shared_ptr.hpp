@@ -289,3 +289,87 @@ shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U> &ptr)
 }
 
 #endif
+
+//简化版！
+/*
+#ifndef SHARED_PTR_H_
+#define SHARED_PTR_H_
+
+template<typename T>
+class shared_ptr_count
+{
+public:
+	shared_ptr_count():
+		pn_(nullptr)
+	{
+		;
+	}
+	void countadd(T *p)
+	{
+		if (p!=nullptr)
+		{
+			if (pn_ ==nullptr)
+			{
+				pn_ = new long(1);
+			}
+			else
+			{
+				++(*pn_);
+			}
+		}
+	}
+	void release(T *p)
+	{
+		if ((pn_ !=nullptr)&&(p!=nullptr))
+		{
+			--(*pn_);
+			if (*pn_ ==0)
+			{
+				delete p;
+				delete pn_;
+			}
+			pn_ = nullptr;
+		}
+	}
+private:
+	long *pn_;
+};
+
+template<typename T>
+class shared_ptr
+{
+public:
+	shared_ptr():
+		countobj_(),
+		ptr_(nullptr)
+	{
+		;
+	}
+
+	explicit shared_ptr(T *p) :
+		countobj_(),
+		ptr_(p)
+	{
+		countadd(p);
+		ptr_ = p;
+	}
+
+	~shared_ptr()
+	{
+		release(ptr_);
+	}
+private:
+	void countadd(T *p)
+	{
+		countobj_.countadd(p);
+	}
+	void release(T *p)
+	{
+		countobj_.release(p);
+	}
+private:
+	T *ptr_;
+	shared_ptr_count<T> countobj_;
+};
+#endif
+*/
