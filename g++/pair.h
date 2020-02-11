@@ -39,8 +39,8 @@
 
 #ifdef __STL_USE_NAMESPACES
 
-using __STD::pair;
 using __STD::make_pair;
+using __STD::pair;
 
 #endif /* __STL_USE_NAMESPACES */
 

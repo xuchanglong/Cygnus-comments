@@ -495,7 +495,7 @@ public:
   S operator()(T *p) const { return (p->*f)(); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   ();
 };
 
@@ -507,7 +507,7 @@ public:
   S operator()(const T *p) const { return (p->*f)(); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   () const;
 };
 
@@ -519,7 +519,7 @@ public:
   S operator()(T &r) const { return (r.*f)(); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   ();
 };
 
@@ -531,7 +531,7 @@ public:
   S operator()(const T &r) const { return (r.*f)(); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   () const;
 };
 
@@ -543,7 +543,7 @@ public:
   S operator()(T *p, A x) const { return (p->*f)(x); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   (A);
 };
 
@@ -555,7 +555,7 @@ public:
   S operator()(const T *p, A x) const { return (p->*f)(x); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   (A) const;
 };
 
@@ -567,7 +567,7 @@ public:
   S operator()(T &r, A x) const { return (r.*f)(x); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   (A);
 };
 
@@ -579,7 +579,7 @@ public:
   S operator()(const T &r, A x) const { return (r.*f)(x); }
 
 private:
-  S (T::*f)
+  S(T::*f)
   (A) const;
 };
 
