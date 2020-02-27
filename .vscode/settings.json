@@ -54,6 +54,8 @@
         "xutility": "cpp",
         "array": "cpp",
         "unordered_map": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "memory_resource": "cpp",
+        "*.tcc": "cpp"
     }
 }

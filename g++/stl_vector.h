@@ -362,14 +362,18 @@ public:
 		 */
         destroy(finish);
     }
-    /*
-     *	清除某个位置上的元素。
-     */
+    /**
+     * function 清除某个位置上的元素。
+     * notice   根据该函数的实现原理，erase 后面的迭代器不会失效。
+    */
     iterator erase(iterator position)
     {
         if (position + 1 != end())
             copy(position + 1, finish, position);
+        // 使得 finish 指向多余的那个元素。
+        // 同时也保证了 finish 始终位于有效数据的下一位。
         --finish;
+        // 删除该多雨位置的内存。
         destroy(finish);
         return position;
     }
@@ -384,7 +388,7 @@ public:
     	 */
         iterator i = copy(last, finish, first);
         /*
-		 *	销毁	 i 之后的数据。
+		 *	销毁 i 之后的数据。
 		 */
         destroy(i, finish);
         /*

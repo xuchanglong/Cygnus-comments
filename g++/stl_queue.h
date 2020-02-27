@@ -34,21 +34,24 @@
 __STL_BEGIN_NAMESPACE
 
 #ifndef __STL_LIMITED_DEFAULT_TEMPLATES
-template <class T, class Sequence = deque<T> >
+template <class T, class Sequence = deque<T>>
 #else
 template <class T, class Sequence>
 #endif
 class queue
 {
-    friend bool operator== __STL_NULL_TMPL_ARGS (const queue& x, const queue& y);
-    friend bool operator< __STL_NULL_TMPL_ARGS (const queue& x, const queue& y);
+    friend bool operator== __STL_NULL_TMPL_ARGS(const queue &x, const queue &y);
+    friend bool operator<__STL_NULL_TMPL_ARGS(const queue &x, const queue &y);
+
 public:
     typedef typename Sequence::value_type value_type;
     typedef typename Sequence::size_type size_type;
     typedef typename Sequence::reference reference;
     typedef typename Sequence::const_reference const_reference;
+
 protected:
     Sequence c;
+
 public:
     bool empty() const
     {
@@ -74,7 +77,7 @@ public:
     {
         return c.back();
     }
-    void push(const value_type& x)
+    void push(const value_type &x)
     {
         c.push_back(x);
     }
@@ -85,40 +88,42 @@ public:
 };
 
 template <class T, class Sequence>
-bool operator==(const queue<T, Sequence>& x, const queue<T, Sequence>& y)
+bool operator==(const queue<T, Sequence> &x, const queue<T, Sequence> &y)
 {
     return x.c == y.c;
 }
 
 template <class T, class Sequence>
-bool operator<(const queue<T, Sequence>& x, const queue<T, Sequence>& y)
+bool operator<(const queue<T, Sequence> &x, const queue<T, Sequence> &y)
 {
     return x.c < y.c;
 }
 
 #ifndef __STL_LIMITED_DEFAULT_TEMPLATES
 template <class T, class Sequence = vector<T>,
-          class Compare = less<typename Sequence::value_type> >
+          class Compare = less<typename Sequence::value_type>>
 #else
 template <class T, class Sequence, class Compare>
 #endif
-class  priority_queue
+class priority_queue
 {
 public:
     typedef typename Sequence::value_type value_type;
     typedef typename Sequence::size_type size_type;
     typedef typename Sequence::reference reference;
     typedef typename Sequence::const_reference const_reference;
+
 protected:
     Sequence c;
     Compare comp;
+
 public:
     priority_queue() : c() {}
-    explicit priority_queue(const Compare& x) :  c(), comp(x) {}
+    explicit priority_queue(const Compare &x) : c(), comp(x) {}
 
 #ifdef __STL_MEMBER_TEMPLATES
     template <class InputIterator>
-    priority_queue(InputIterator first, InputIterator last, const Compare& x)
+    priority_queue(InputIterator first, InputIterator last, const Compare &x)
         : c(first, last), comp(x)
     {
         make_heap(c.begin(), c.end(), comp);
@@ -129,13 +134,13 @@ public:
     {
         make_heap(c.begin(), c.end(), comp);
     }
-#else /* __STL_MEMBER_TEMPLATES */
-    priority_queue(const value_type* first, const value_type* last,
-                   const Compare& x) : c(first, last), comp(x)
+#else  /* __STL_MEMBER_TEMPLATES */
+    priority_queue(const value_type *first, const value_type *last,
+                   const Compare &x) : c(first, last), comp(x)
     {
         make_heap(c.begin(), c.end(), comp);
     }
-    priority_queue(const value_type* first, const value_type* last)
+    priority_queue(const value_type *first, const value_type *last)
         : c(first, last)
     {
         make_heap(c.begin(), c.end(), comp);
@@ -154,7 +159,7 @@ public:
     {
         return c.front();
     }
-    void push(const value_type& x)
+    void push(const value_type &x)
     {
         __STL_TRY
         {
