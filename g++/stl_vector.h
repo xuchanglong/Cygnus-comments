@@ -377,27 +377,27 @@ public:
         destroy(finish);
         return position;
     }
-    /*
-     *	清除 [first , last) 之间的元素。
-     */
+    /**
+     * 清除 [first , last) 之间的元素。
+    */
     iterator erase(iterator first, iterator last)
     {
-        /*
-    	 *	将 last 和 finish 之间的数据复制到
-    	 *  以 first 为开始的内存中。
-    	 */
+        /**
+         * 将 last 和 finish 之间的数据复制到
+         * 以 first 为开始的内存中。
+        */
         iterator i = copy(last, finish, first);
-        /*
-		 *	销毁 i 之后的数据。
-		 */
+        /**
+         * 销毁 i 之后的数据。
+        */
         destroy(i, finish);
-        /*
-		 *	调整水位。
-		 */
+        /**
+         * 调整水位。
+        */
         finish = finish - (last - first);
-        /*
-		 *	返回新的终点。
-		 */
+        /**
+         * 返回新的终点。
+        */
         return first;
     }
     void resize(size_type new_size, const T &x)

@@ -60,17 +60,17 @@ inline void destroy(ForwardIterator first, ForwardIterator last)
 }
 
 // === 二级 === //
-// 接受两个迭代器，以__type_trais<T>判断是否有trivial destructor.
-// trivial destructor,直译：微不足道的析构，也就是默认析构函数。
+// 接受两个迭代器，以 __type_trais<T> 判断是否有 trivial destructor 。
+// trivial destructor，直译：微不足道的析构，也就是默认析构函数。
 // 因为默认的析构函数是什么也不做的。
-// 判断是否有trivial destructor，也就是判断是否有重载的析构函数。
+// 判断是否有 trivial destructor，也就是判断是否有重载的析构函数。
 
-// 这里的萃取技术，实际上就是穷举法。即：若T为C++自带的类型，则一律视为
-// _true_type，否则一律视为_false_type.
+// 这里的萃取技术，实际上就是穷举法。即：若 T 为 C++ 自带的类型，则一律视为
+// _true_type，否则一律视为 _false_type 。
 template <class ForwardIterator, class T>
 inline void __destroy(ForwardIterator first, ForwardIterator last, T *)
 {
-    typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
+    typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor; 
     __destroy_aux(first, last, trivial_destructor());
 }
 
