@@ -57,6 +57,10 @@
         "string_view": "cpp",
         "memory_resource": "cpp",
         "*.tcc": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "atomic": "cpp",
+        "clocale": "cpp",
+        "cstdarg": "cpp",
+        "fstream": "cpp"
     }
 }

@@ -41,41 +41,41 @@ __STL_BEGIN_NAMESPACE
 template <class T>
 struct __list_node
 {
-    typedef void* void_pointer;
+    typedef void *void_pointer;
     void_pointer next;
     void_pointer prev;
     T data;
 };
 
 //-------------------------------- list iterator ---------------------------------//
-template<class T, class Ref, class Ptr>
+template <class T, class Ref, class Ptr>
 struct __list_iterator
 {
-    typedef __list_iterator<T, T&, T*>             iterator;
-    typedef __list_iterator<T, const T&, const T*> const_iterator;
-    typedef __list_iterator<T, Ref, Ptr>           self;
+    typedef __list_iterator<T, T &, T *> iterator;
+    typedef __list_iterator<T, const T &, const T *> const_iterator;
+    typedef __list_iterator<T, Ref, Ptr> self;
 
-    typedef bidirectional_iterator_tag	iterator_category;
-    typedef T 							value_type;
-    typedef Ptr 						pointer;
-    typedef Ref 						reference;
-    typedef __list_node<T>	* 			link_type;
-    typedef size_t 						size_type;
-    typedef ptrdiff_t 					difference_type;
-	/*
+    typedef bidirectional_iterator_tag iterator_category;
+    typedef T value_type;
+    typedef Ptr pointer;
+    typedef Ref reference;
+    typedef __list_node<T> *link_type;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+    /*
 	 *	当前所用的节点。
 	 */
     link_type node;
 
     __list_iterator(link_type x) : node(x) {}
     __list_iterator() {}
-    __list_iterator(const iterator& x) : node(x.node) {}
+    __list_iterator(const iterator &x) : node(x.node) {}
 
-    bool operator==(const self& x) const
+    bool operator==(const self &x) const
     {
         return node == x.node;
     }
-    bool operator!=(const self& x) const
+    bool operator!=(const self &x) const
     {
         return node != x.node;
     }
@@ -91,7 +91,7 @@ struct __list_iterator
     }
 #endif /* __SGI_STL_NO_ARROW_OPERATOR */
 
-    self& operator++()
+    self &operator++()
     {
         node = (link_type)((*node).next);
         return *this;
@@ -102,7 +102,7 @@ struct __list_iterator
         ++*this;
         return tmp;
     }
-    self& operator--()
+    self &operator--()
     {
         node = (link_type)((*node).prev);
         return *this;
@@ -119,21 +119,21 @@ struct __list_iterator
 
 template <class T, class Ref, class Ptr>
 inline bidirectional_iterator_tag
-iterator_category(const __list_iterator<T, Ref, Ptr>&)
+iterator_category(const __list_iterator<T, Ref, Ptr> &)
 {
     return bidirectional_iterator_tag();
 }
 
 template <class T, class Ref, class Ptr>
-inline T*
-value_type(const __list_iterator<T, Ref, Ptr>&)
+inline T *
+value_type(const __list_iterator<T, Ref, Ptr> &)
 {
     return 0;
 }
 
 template <class T, class Ref, class Ptr>
-inline ptrdiff_t*
-distance_type(const __list_iterator<T, Ref, Ptr>&)
+inline ptrdiff_t *
+distance_type(const __list_iterator<T, Ref, Ptr> &)
 {
     return 0;
 }
@@ -144,57 +144,58 @@ template <class T, class Alloc = alloc>
 class list
 {
 protected:
-    typedef void* 							void_pointer;
-    typedef __list_node<T> 					list_node;
-	/*
+    typedef void *void_pointer;
+    typedef __list_node<T> list_node;
+    /*
 	 *	专属空间配置器，每次配置一个节点大小。
 	 */
-    typedef simple_alloc<list_node, Alloc> 	list_node_allocator;
-public:
-    typedef T 								value_type;
-    typedef value_type	* 					pointer;
-    typedef const value_type	*			const_pointer;
-    typedef value_type	& 					reference;
-    typedef const value_type	&			const_reference;
-    typedef list_node	*					link_type;
-    typedef size_t 							size_type;
-    typedef ptrdiff_t 						difference_type;
+    typedef simple_alloc<list_node, Alloc> list_node_allocator;
 
 public:
-    typedef __list_iterator<T, T&, T*>             iterator;
-    typedef __list_iterator<T, const T&, const T*> const_iterator;
+    typedef T value_type;
+    typedef value_type *pointer;
+    typedef const value_type *const_pointer;
+    typedef value_type &reference;
+    typedef const value_type &const_reference;
+    typedef list_node *link_type;
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+
+public:
+    typedef __list_iterator<T, T &, T *> iterator;
+    typedef __list_iterator<T, const T &, const T *> const_iterator;
 
 #ifdef __STL_CLASS_PARTIAL_SPECIALIZATION
     typedef reverse_iterator<const_iterator> const_reverse_iterator;
     typedef reverse_iterator<iterator> reverse_iterator;
-#else /* __STL_CLASS_PARTIAL_SPECIALIZATION */
+#else  /* __STL_CLASS_PARTIAL_SPECIALIZATION */
     typedef reverse_bidirectional_iterator<const_iterator, value_type,
-            const_reference, difference_type>
-            const_reverse_iterator;
+                                           const_reference, difference_type>
+        const_reverse_iterator;
     typedef reverse_bidirectional_iterator<iterator, value_type, reference,
-            difference_type>
-            reverse_iterator;
+                                           difference_type>
+        reverse_iterator;
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
 protected:
-	/*
+    /*
 	 *	申请一个节点的内存，并返回。
 	 */
     link_type get_node()
     {
         return list_node_allocator::allocate();
     }
-	/*
+    /*
 	 *	释放一个节点的内存。
 	 */
     void put_node(link_type p)
     {
         list_node_allocator::deallocate(p);
     }
-	/*
+    /*
 	 *	创建一个节点，并初始化为 x。
 	 */
-    link_type create_node(const T& x)
+    link_type create_node(const T &x)
     {
         link_type p = get_node();
         __STL_TRY
@@ -204,7 +205,7 @@ protected:
         __STL_UNWIND(put_node(p));
         return p;
     }
-	/*
+    /*
 	 *	销毁一个节点的数据，并 delete 内存。
 	 */
     void destroy_node(link_type p)
@@ -214,7 +215,7 @@ protected:
     }
 
 protected:
-	/*
+    /*
 	 *	建立一个空链表。
 	 */
     void empty_initialize()
@@ -223,10 +224,10 @@ protected:
         node->next = node;
         node->prev = node;
     }
-	/*
+    /*
 	 *	申请 n 个节点，每个节点初始化为 value。
 	 */
-    void fill_initialize(size_type n, const T& value)
+    void fill_initialize(size_type n, const T &value)
     {
         empty_initialize();
         __STL_TRY
@@ -248,7 +249,7 @@ protected:
         __STL_UNWIND(clear(); put_node(node));
     }
 #else  /* __STL_MEMBER_TEMPLATES */
-    void range_initialize(const T* first, const T* last)
+    void range_initialize(const T *first, const T *last)
     {
         empty_initialize();
         __STL_TRY
@@ -269,7 +270,7 @@ protected:
 #endif /* __STL_MEMBER_TEMPLATES */
 
 protected:
-	/*
+    /*
 	 *	
 	 */
     link_type node;
@@ -312,14 +313,14 @@ public:
     {
         return const_reverse_iterator(begin());
     }
-	/*
+    /*
 	 *	判断该链表是否只有一个哨兵节点。
 	 */
     bool empty() const
     {
         return node->next == node;
     }
-	/*
+    /*
 	 *	计算该 list 中元素的个数。
 	 */
     size_type size() const
@@ -348,14 +349,14 @@ public:
     {
         return *(--end());
     }
-    void swap(list<T, Alloc>& x)
+    void swap(list<T, Alloc> &x)
     {
         __STD::swap(node, x.node);
     }
-	/*
+    /*
 	 *	在迭代器 position 所指的位置上插入一个节点，内容为 x。
 	 */
-    iterator insert(iterator position, const T& x)
+    iterator insert(iterator position, const T &x)
     {
         link_type tmp = create_node(x);
         tmp->next = position.node;
@@ -371,35 +372,35 @@ public:
 #ifdef __STL_MEMBER_TEMPLATES
     template <class InputIterator>
     void insert(iterator position, InputIterator first, InputIterator last);
-#else /* __STL_MEMBER_TEMPLATES */
-    void insert(iterator position, const T* first, const T* last);
+#else  /* __STL_MEMBER_TEMPLATES */
+    void insert(iterator position, const T *first, const T *last);
     void insert(iterator position,
                 const_iterator first, const_iterator last);
 #endif /* __STL_MEMBER_TEMPLATES */
-    void insert(iterator pos, size_type n, const T& x);
-    void insert(iterator pos, int n, const T& x)
+    void insert(iterator pos, size_type n, const T &x);
+    void insert(iterator pos, int n, const T &x)
     {
         insert(pos, (size_type)n, x);
     }
-    void insert(iterator pos, long n, const T& x)
+    void insert(iterator pos, long n, const T &x)
     {
         insert(pos, (size_type)n, x);
     }
-	/*
+    /*
 	 *	插入一个节点，作为头节点。
 	 */
-    void push_front(const T& x)
+    void push_front(const T &x)
     {
         insert(begin(), x);
     }
-	/*
+    /*
 	 *	插入一个节点，作为尾节点。
 	 */
-    void push_back(const T& x)
+    void push_back(const T &x)
     {
         insert(end(), x);
     }
-	/*
+    /*
 	 *	移除迭代器 position 所指的节点。
 	 */
     iterator erase(iterator position)
@@ -412,20 +413,20 @@ public:
         return iterator(next_node);
     }
     iterator erase(iterator first, iterator last);
-    void resize(size_type new_size, const T& x);
+    void resize(size_type new_size, const T &x);
     void resize(size_type new_size)
     {
         resize(new_size, T());
     }
     void clear();
-	/*
+    /*
 	 *	移除头节点。
 	 */
     void pop_front()
     {
         erase(begin());
     }
-	/*
+    /*
 	 *	移除尾节点。
 	 */
     void pop_back()
@@ -433,16 +434,16 @@ public:
         iterator tmp = end();
         erase(--tmp);
     }
-	//------------------- 构造函数 -------------------//
-    list(size_type n, const T& value)
+    //------------------- 构造函数 -------------------//
+    list(size_type n, const T &value)
     {
         fill_initialize(n, value);
     }
-    list(int n, const T& value)
+    list(int n, const T &value)
     {
         fill_initialize(n, value);
     }
-    list(long n, const T& value)
+    list(long n, const T &value)
     {
         fill_initialize(n, value);
     }
@@ -458,8 +459,8 @@ public:
         range_initialize(first, last);
     }
 
-#else /* __STL_MEMBER_TEMPLATES */
-    list(const T* first, const T* last)
+#else  /* __STL_MEMBER_TEMPLATES */
+    list(const T *first, const T *last)
     {
         range_initialize(first, last);
     }
@@ -468,20 +469,20 @@ public:
         range_initialize(first, last);
     }
 #endif /* __STL_MEMBER_TEMPLATES */
-    list(const list<T, Alloc>& x)
+    list(const list<T, Alloc> &x)
     {
         range_initialize(x.begin(), x.end());
     }
-	//------------------- 构造函数 END s-------------------//
+    //------------------- 构造函数 END s-------------------//
     ~list()
     {
         clear();
         put_node(node);
     }
-    list<T, Alloc>& operator=(const list<T, Alloc>& x);
+    list<T, Alloc> &operator=(const list<T, Alloc> &x);
 
 protected:
-	/*
+    /*
 	 *	将 [first,lasst]内的所有元素移动到 positon 之前。
 	 *	可以是两个 list，也可以是同一个 list 。
 	 */
@@ -500,68 +501,73 @@ protected:
     }
 
 public:
-	/*
+    /*
 	 *	将 x 接合于 position 所指位置之前。x 必须不同于 *this。
 	 */
-    void splice(iterator position, list& x)
+    void splice(iterator position, list &x)
     {
         if (!x.empty())
             transfer(position, x.begin(), x.end());
     }
-	/*
+    /*
 	 *	将 i 所指元素接洽于 position 所指位置之前。
 	 *	position 和 i 可指向同一个 list 。
 	 */
-    void splice(iterator position, list&, iterator i)
+    void splice(iterator position, list &, iterator i)
     {
         iterator j = i;
         ++j;
-        if (position == i || position == j) return;
+        if (position == i || position == j)
+            return;
         transfer(position, i, j);
     }
-	/*
+    /*
 	 *	将 [first,last),内的所有元素接合于 position 所指位置之前。
 	 *	position 和 [first,last)可指向同一个list。
 	 *	但 position 不能位于 [first,last) 之间。
 	 */
-    void splice(iterator position, list&, iterator first, iterator last)
+    void splice(iterator position, list &, iterator first, iterator last)
     {
         if (first != last)
             transfer(position, first, last);
     }
-    void remove(const T& value);
+    void remove(const T &value);
     void unique();
-    void merge(list& x);
+    void merge(list &x);
     void reverse();
     void sort();
 
 #ifdef __STL_MEMBER_TEMPLATES
-    template <class Predicate> void remove_if(Predicate);
-    template <class BinaryPredicate> void unique(BinaryPredicate);
-    template <class StrictWeakOrdering> void merge(list&, StrictWeakOrdering);
-    template <class StrictWeakOrdering> void sort(StrictWeakOrdering);
+    template <class Predicate>
+    void remove_if(Predicate);
+    template <class BinaryPredicate>
+    void unique(BinaryPredicate);
+    template <class StrictWeakOrdering>
+    void merge(list &, StrictWeakOrdering);
+    template <class StrictWeakOrdering>
+    void sort(StrictWeakOrdering);
 #endif /* __STL_MEMBER_TEMPLATES */
 
-    friend bool operator== __STL_NULL_TMPL_ARGS (const list& x, const list& y);
+    friend bool operator== __STL_NULL_TMPL_ARGS(const list &x, const list &y);
 };
 
 template <class T, class Alloc>
-inline bool operator==(const list<T,Alloc>& x, const list<T,Alloc>& y)
+inline bool operator==(const list<T, Alloc> &x, const list<T, Alloc> &y)
 {
-    typedef typename list<T,Alloc>::link_type link_type;
+    typedef typename list<T, Alloc>::link_type link_type;
     link_type e1 = x.node;
     link_type e2 = y.node;
-    link_type n1 = (link_type) e1->next;
-    link_type n2 = (link_type) e2->next;
-    for ( ; n1 != e1 && n2 != e2 ;
-            n1 = (link_type) n1->next, n2 = (link_type) n2->next)
+    link_type n1 = (link_type)e1->next;
+    link_type n2 = (link_type)e2->next;
+    for (; n1 != e1 && n2 != e2;
+         n1 = (link_type)n1->next, n2 = (link_type)n2->next)
         if (n1->data != n2->data)
             return false;
     return n1 == e1 && n2 == e2;
 }
 
 template <class T, class Alloc>
-inline bool operator<(const list<T, Alloc>& x, const list<T, Alloc>& y)
+inline bool operator<(const list<T, Alloc> &x, const list<T, Alloc> &y)
 {
     return lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
 }
@@ -569,7 +575,7 @@ inline bool operator<(const list<T, Alloc>& x, const list<T, Alloc>& y)
 #ifdef __STL_FUNCTION_TMPL_PARTIAL_ORDER
 
 template <class T, class Alloc>
-inline void swap(list<T, Alloc>& x, list<T, Alloc>& y)
+inline void swap(list<T, Alloc> &x, list<T, Alloc> &y)
 {
     x.swap(y);
 }
@@ -578,20 +584,21 @@ inline void swap(list<T, Alloc>& x, list<T, Alloc>& y)
 
 #ifdef __STL_MEMBER_TEMPLATES
 
-template <class T, class Alloc> template <class InputIterator>
+template <class T, class Alloc>
+template <class InputIterator>
 void list<T, Alloc>::insert(iterator position,
                             InputIterator first, InputIterator last)
 {
-    for ( ; first != last; ++first)
+    for (; first != last; ++first)
         insert(position, *first);
 }
 
 #else /* __STL_MEMBER_TEMPLATES */
 
 template <class T, class Alloc>
-void list<T, Alloc>::insert(iterator position, const T* first, const T* last)
+void list<T, Alloc>::insert(iterator position, const T *first, const T *last)
 {
-    for ( ; first != last; ++first)
+    for (; first != last; ++first)
         insert(position, *first);
 }
 
@@ -599,36 +606,37 @@ template <class T, class Alloc>
 void list<T, Alloc>::insert(iterator position,
                             const_iterator first, const_iterator last)
 {
-    for ( ; first != last; ++first)
+    for (; first != last; ++first)
         insert(position, *first);
 }
 
 #endif /* __STL_MEMBER_TEMPLATES */
 
 template <class T, class Alloc>
-void list<T, Alloc>::insert(iterator position, size_type n, const T& x)
+void list<T, Alloc>::insert(iterator position, size_type n, const T &x)
 {
-    for ( ; n > 0; --n)
+    for (; n > 0; --n)
         insert(position, x);
 }
 
 template <class T, class Alloc>
-list<T,Alloc>::iterator list<T, Alloc>::erase(iterator first, iterator last)
+list<T, Alloc>::iterator list<T, Alloc>::erase(iterator first, iterator last)
 {
-    while (first != last) erase(first++);
+    while (first != last)
+        erase(first++);
     return last;
 }
 
 template <class T, class Alloc>
-void list<T, Alloc>::resize(size_type new_size, const T& x)
+void list<T, Alloc>::resize(size_type new_size, const T &x)
 {
     iterator i = begin();
     size_type len = 0;
-    for ( ; i != end() && len < new_size; ++i, ++len)
+    for (; i != end() && len < new_size; ++i, ++len)
         ;
     if (len == new_size)
         erase(i, end());
-    else                          // i == end()
+    else // i == end()
         insert(end(), new_size - len, x);
 }
 /*
@@ -637,11 +645,11 @@ void list<T, Alloc>::resize(size_type new_size, const T& x)
 template <class T, class Alloc>
 void list<T, Alloc>::clear()
 {
-    link_type cur = (link_type) node->next;
+    link_type cur = (link_type)node->next;
     while (cur != node)
     {
         link_type tmp = cur;
-        cur = (link_type) cur->next;
+        cur = (link_type)cur->next;
         destroy_node(tmp);
     }
     node->next = node;
@@ -649,7 +657,7 @@ void list<T, Alloc>::clear()
 }
 
 template <class T, class Alloc>
-list<T, Alloc>& list<T, Alloc>::operator=(const list<T, Alloc>& x)
+list<T, Alloc> &list<T, Alloc>::operator=(const list<T, Alloc> &x)
 {
     if (this != &x)
     {
@@ -657,7 +665,8 @@ list<T, Alloc>& list<T, Alloc>::operator=(const list<T, Alloc>& x)
         iterator last1 = end();
         const_iterator first2 = x.begin();
         const_iterator last2 = x.end();
-        while (first1 != last1 && first2 != last2) *first1++ = *first2++;
+        while (first1 != last1 && first2 != last2)
+            *first1++ = *first2++;
         if (first2 == last2)
             erase(first1, last1);
         else
@@ -669,7 +678,7 @@ list<T, Alloc>& list<T, Alloc>::operator=(const list<T, Alloc>& x)
  *	将数值为 value 的所有元素移除。
  */
 template <class T, class Alloc>
-void list<T, Alloc>::remove(const T& value)
+void list<T, Alloc>::remove(const T &value)
 {
     iterator first = begin();
     iterator last = end();
@@ -677,7 +686,8 @@ void list<T, Alloc>::remove(const T& value)
     {
         iterator next = first;
         ++next;
-        if (*first == value) erase(first);
+        if (*first == value)
+            erase(first);
         first = next;
     }
 }
@@ -690,10 +700,11 @@ void list<T, Alloc>::unique()
 {
     iterator first = begin();
     iterator last = end();
-	/*
+    /*
 	 *	空链表，什么也不做。
 	 */
-    if (first == last) return;
+    if (first == last)
+        return;
     iterator next = first;
     while (++next != last)
     {
@@ -710,12 +721,12 @@ void list<T, Alloc>::unique()
  *	两个 lists 中的内容必须经过递增排序。
  */
 template <class T, class Alloc>
-void list<T, Alloc>::merge(list<T, Alloc>& x)
+void list<T, Alloc>::merge(list<T, Alloc> &x)
 {
-    iterator first1	= 	begin();
-    iterator last1 	= 	end();
-    iterator first2 = 	x.begin();
-    iterator last2 	= 	x.end();
+    iterator first1 = begin();
+    iterator last1 = end();
+    iterator first2 = x.begin();
+    iterator last2 = x.end();
     while (first1 != last1 && first2 != last2)
     {
         if (*first2 < *first1)
@@ -729,12 +740,12 @@ void list<T, Alloc>::merge(list<T, Alloc>& x)
             ++first1;
         }
     }
-	/*
+    /*
 	 *	后面没有合入的节点，直接放到 *this 的后面。
 	 */
-    if (first2 != last2) 
-	{
-		transfer(last1, first2, last2);
+    if (first2 != last2)
+    {
+        transfer(last1, first2, last2);
     }
 }
 /*
@@ -743,10 +754,11 @@ void list<T, Alloc>::merge(list<T, Alloc>& x)
 template <class T, class Alloc>
 void list<T, Alloc>::reverse()
 {
-	/*
+    /*
 	 *	若是空链表 或者 仅有1个元素，则不进行任何操作。
 	 */
-    if (node->next == node || link_type(node->next)->next == node) return;
+    if (node->next == node || link_type(node->next)->next == node)
+        return;
     iterator first = begin();
     ++first;
     while (first != end())
@@ -762,33 +774,37 @@ void list<T, Alloc>::reverse()
 template <class T, class Alloc>
 void list<T, Alloc>::sort()
 {
-    if (node->next == node || link_type(node->next)->next == node) return;
-	/*
+    if (node->next == node || link_type(node->next)->next == node)
+        return;
+    /*
 	 *	中介数据存放区。
 	 */
-	list<T, Alloc> carry;
+    list<T, Alloc> carry;
     list<T, Alloc> counter[64];
     int fill = 0;
     while (!empty())
     {
         carry.splice(carry.begin(), *this, begin());
         int i = 0;
-        while(i < fill && !counter[i].empty())
+        while (i < fill && !counter[i].empty())
         {
             counter[i].merge(carry);
             carry.swap(counter[i++]);
         }
         carry.swap(counter[i]);
-        if (i == fill) ++fill;
+        if (i == fill)
+            ++fill;
     }
 
-    for (int i = 1; i < fill; ++i) counter[i].merge(counter[i-1]);
-    swap(counter[fill-1]);
+    for (int i = 1; i < fill; ++i)
+        counter[i].merge(counter[i - 1]);
+    swap(counter[fill - 1]);
 }
 
 #ifdef __STL_MEMBER_TEMPLATES
 
-template <class T, class Alloc> template <class Predicate>
+template <class T, class Alloc>
+template <class Predicate>
 void list<T, Alloc>::remove_if(Predicate pred)
 {
     iterator first = begin();
@@ -797,17 +813,20 @@ void list<T, Alloc>::remove_if(Predicate pred)
     {
         iterator next = first;
         ++next;
-        if (pred(*first)) erase(first);
+        if (pred(*first))
+            erase(first);
         first = next;
     }
 }
 
-template <class T, class Alloc> template <class BinaryPredicate>
+template <class T, class Alloc>
+template <class BinaryPredicate>
 void list<T, Alloc>::unique(BinaryPredicate binary_pred)
 {
     iterator first = begin();
     iterator last = end();
-    if (first == last) return;
+    if (first == last)
+        return;
     iterator next = first;
     while (++next != last)
     {
@@ -819,8 +838,9 @@ void list<T, Alloc>::unique(BinaryPredicate binary_pred)
     }
 }
 
-template <class T, class Alloc> template <class StrictWeakOrdering>
-void list<T, Alloc>::merge(list<T, Alloc>& x, StrictWeakOrdering comp)
+template <class T, class Alloc>
+template <class StrictWeakOrdering>
+void list<T, Alloc>::merge(list<T, Alloc> &x, StrictWeakOrdering comp)
 {
     iterator first1 = begin();
     iterator last1 = end();
@@ -835,13 +855,16 @@ void list<T, Alloc>::merge(list<T, Alloc>& x, StrictWeakOrdering comp)
         }
         else
             ++first1;
-    if (first2 != last2) transfer(last1, first2, last2);
+    if (first2 != last2)
+        transfer(last1, first2, last2);
 }
 
-template <class T, class Alloc> template <class StrictWeakOrdering>
+template <class T, class Alloc>
+template <class StrictWeakOrdering>
 void list<T, Alloc>::sort(StrictWeakOrdering comp)
 {
-    if (node->next == node || link_type(node->next)->next == node) return;
+    if (node->next == node || link_type(node->next)->next == node)
+        return;
     list<T, Alloc> carry;
     list<T, Alloc> counter[64];
     int fill = 0;
@@ -849,17 +872,19 @@ void list<T, Alloc>::sort(StrictWeakOrdering comp)
     {
         carry.splice(carry.begin(), *this, begin());
         int i = 0;
-        while(i < fill && !counter[i].empty())
+        while (i < fill && !counter[i].empty())
         {
             counter[i].merge(carry, comp);
             carry.swap(counter[i++]);
         }
         carry.swap(counter[i]);
-        if (i == fill) ++fill;
+        if (i == fill)
+            ++fill;
     }
 
-    for (int i = 1; i < fill; ++i) counter[i].merge(counter[i-1], comp);
-    swap(counter[fill-1]);
+    for (int i = 1; i < fill; ++i)
+        counter[i].merge(counter[i - 1], comp);
+    swap(counter[fill - 1]);
 }
 
 #endif /* __STL_MEMBER_TEMPLATES */
